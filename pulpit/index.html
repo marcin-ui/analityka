@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulpit zarządczy — Projekty</title>
+<style>
+:root{
+  --bg:#F4F5F3; --surface:#FFFFFF; --ink:#18222C; --muted:#5B6875; --line:#DDE2E1;
+  --accent:#1D6FB8; --accent-soft:#E3EEF8;
+  --good:#2E7D4F; --good-bg:#E4F0E8; --warn:#B7791F; --warn-bg:#F7EEDD; --crit:#B3362B; --crit-bg:#F8E7E4;
+  --chip:#EDF0EE;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12181F; --surface:#1B242E; --ink:#E7ECF1; --muted:#93A1AE; --line:#2C3742;
+  --accent:#4E92D4; --accent-soft:#1E3A52;
+  --good:#5FAE7F; --good-bg:#1D2F26; --warn:#D0A24A; --warn-bg:#332A18; --crit:#D4726A; --crit-bg:#361E1B;
+  --chip:#232E39;
+}}
+:root[data-theme="dark"]{
+  --bg:#12181F; --surface:#1B242E; --ink:#E7ECF1; --muted:#93A1AE; --line:#2C3742;
+  --accent:#4E92D4; --accent-soft:#1E3A52;
+  --good:#5FAE7F; --good-bg:#1D2F26; --warn:#D0A24A; --warn-bg:#332A18; --crit:#D4726A; --crit-bg:#361E1B;
+  --chip:#232E39;
+}
+:root[data-theme="light"]{
+  --bg:#F4F5F3; --surface:#FFFFFF; --ink:#18222C; --muted:#5B6875; --line:#DDE2E1;
+  --accent:#1D6FB8; --accent-soft:#E3EEF8;
+  --good:#2E7D4F; --good-bg:#E4F0E8; --warn:#B7791F; --warn-bg:#F7EEDD; --crit:#B3362B; --crit-bg:#F8E7E4;
+  --chip:#EDF0EE;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+header{position:sticky;top:0;z-index:9;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0 0}
+.hrow{max-width:1180px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
+h1{font-size:19px;margin:0;font-weight:700}
+.meta{color:var(--muted);font-size:12.5px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--warn);background:var(--warn-bg);border-radius:4px;padding:2px 8px}
+nav{max-width:1180px;margin:6px auto 0;padding:0 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font:600 13px/1 inherit;font-family:inherit;padding:9px 14px;border-radius:8px 8px 0 0;border-bottom:none;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main section{display:none;padding-top:18px}
+main section.on{display:block}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+h2{font-size:16px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card.click{cursor:pointer}
+.card.click:hover{border-color:var(--accent)}
+.kpi{font-size:26px;font-weight:750;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0}
+.kpi small{font-size:14px;font-weight:600;color:var(--muted)}
+.delta{font-size:13px;font-weight:650;font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .down{color:var(--crit)} .mid{color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.pill.g{background:var(--good-bg);color:var(--good)} .pill.y{background:var(--warn-bg);color:var(--warn)} .pill.r{background:var(--crit-bg);color:var(--crit)}
+.pill.n{background:var(--chip);color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:99px;background:currentColor;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;font-weight:700;
+  padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--accent-soft)}
+.num{text-align:right;white-space:nowrap}
+.tscroll{overflow-x:auto}
+.bar{position:relative;height:14px;border-radius:4px;background:var(--chip);min-width:110px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--accent)}
+.bar i.neg{background:var(--crit)}
+.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.65}
+.divbar{position:relative;height:14px;background:var(--chip);border-radius:4px;min-width:110px}
+.divbar .zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:var(--muted);opacity:.6}
+.divbar i{position:absolute;top:0;bottom:0;border-radius:4px}
+.lbl{font-size:12px;color:var(--muted)}
+.footnote{font-size:12px;color:var(--muted);margin-top:10px}
+.demo{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--muted);border:1px dashed var(--line);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.list{margin:0;padding:0;list-style:none}
+.list li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.list li:last-child{border-bottom:none}
+.status-chip{font-size:11px;font-weight:700;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.st-open{background:var(--crit-bg);color:var(--crit)} .st-prog{background:var(--warn-bg);color:var(--warn)} .st-done{background:var(--good-bg);color:var(--good)}
+.crumb{display:none;margin:0 0 12px;font-size:13px;color:var(--muted)}
+.crumb.on{display:block}
+.crumb b{color:var(--accent)}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+a.src{color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:650;cursor:pointer}
+a.src:hover{text-decoration:underline}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filters select,.filters input{font:600 12.5px/1.4 inherit;font-family:inherit;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.theme-btn{margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:4px 10px;font:600 12px/1.4 inherit;cursor:pointer}
+.spark{width:100%;height:80px}
+textarea{width:100%;min-height:70px;font:13.5px/1.5 inherit;font-family:inherit;color:var(--ink);background:var(--bg);
+  border:1px dashed var(--line);border-radius:8px;padding:10px 12px;resize:vertical}
+button.act{border:1px solid var(--accent);background:var(--accent);color:#fff;font:600 12.5px/1.4 inherit;
+  font-family:inherit;border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:6px}
+@media (prefers-reduced-motion: no-preference){ main section.on{animation:f .18s ease} @keyframes f{from{opacity:.4}to{opacity:1}} }
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <h1>Projekty — pulpit zarządczy</h1>
+    <span class="meta" id="m-meta"></span>
+    <span class="badge" id="m-lag"></span>
+    <button class="theme-btn" onclick="tg()">◐ motyw</button>
+  </div>
+  <nav role="tablist">
+    <button role="tab" aria-selected="true"  onclick="tab('pulpit',this)">📊 Pulpit</button>
+    <button role="tab" aria-selected="false" onclick="tab('dzwignia',this)">📈 Dźwignia</button>
+    <button role="tab" aria-selected="false" onclick="tab('pvw',this)">🎯 Plan vs Wykonanie</button>
+    <button role="tab" aria-selected="false" onclick="tab('straty',this)">🔻 Gdzie tracimy</button>
+    <button role="tab" aria-selected="false" onclick="tab('jakosc',this)">✓ Jakość danych</button>
+    <button role="tab" aria-selected="false" onclick="tab('karta',this)">📁 Karta projektu</button>
+  </nav>
+</header>
+
+<div class="wrap"><main>
+  <section id="pulpit" class="on"></section>
+  <section id="dzwignia"></section>
+  <section id="pvw"></section>
+  <section id="straty"></section>
+  <section id="jakosc"></section>
+  <section id="karta"></section>
+</main></div>
+
+<script src="dane.js"></script>
+<script>
+"use strict";
+const D = window.DANE, M = D.metryki, K = D.karty;
+const $ = (id)=>document.getElementById(id);
+const fmt = (x)=> x==null ? "—" : Math.round(x).toLocaleString("pl-PL");
+const tys = (x)=> x==null ? "—" : (x/1000).toLocaleString("pl-PL",{maximumFractionDigits:1});
+const pct = (x,d=1)=> x==null ? "—" : x.toLocaleString("pl-PL",{maximumFractionDigits:d})+"%";
+const esc = (s)=> String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const strefaPill = (s)=> s==null?'<span class="pill n">brak planu</span>'
+  : s==="zielona"?'<span class="pill g"><span class="dot"></span>OK</span>'
+  : s==="zolta"?'<span class="pill y"><span class="dot"></span>uwaga</span>'
+  : '<span class="pill r"><span class="dot"></span>alarm</span>';
+const STATUS_PL = {rozliczony:"Zakończony i rozliczony", zakonczony:"Zakończony (nierozliczony)", w_realizacji:"W realizacji"};
+
+/* ---------- nagłówek ---------- */
+$("m-meta").textContent = `Zakres: GRUPA · ${M.meta.projekty_razem} projektów · dane z eksportów: ${M.meta.data_zrzutu}`;
+$("m-lag").textContent = `lag: świeżo zakończone (${M.meta.wykluczone_lagiem}) poza rankingiem strat przez ${M.meta.lag_dni} dni`;
+
+/* ---------- PDCA: przykładowe wpisy + notatki użytkownika (localStorage) ---------- */
+const PDCA_SEED = [
+  {id:"PDCA-01", opis:"Korekta normy kalkulacyjnej: nacinanie AGRO (deweloperka +16,9%, AGRO +8,3% systematycznie)", obszar:"standard firmowy", status:"OTWARTE", demo:true},
+  {id:"PDCA-02", opis:"Weryfikacja luki przychodu 1,2 mln na zakończonych projektach — fakturowanie czy statusy?", obszar:"rozliczenia", status:"OTWARTE", demo:true},
+  {id:"PDCA-03", opis:"Szkolenie brygad: obowiązek STOP w aplikacji (85% godzin w błędnych wpisach)", obszar:"brygady", status:"OTWARTE", demo:true},
+];
+const notatki = JSON.parse(localStorage.getItem("pdca_notatki")||"{}");
+
+/* ---------- PULPIT ---------- */
+function rPulpit(){
+  const k = M.kafle, my = k.marza_ytd, s = k.strefy_ytd, nz = k.nierozliczone;
+  const tr = M.trend_bledu, u = M.dzwignia.utylizacja;
+  const trPts = tr.map((t,i)=>({x:55+i*(480/Math.max(tr.length-1,1)), y:64-Math.min(t.blad_pct,70)*0.78, t}));
+  const otwarte = PDCA_SEED.filter(x=>x.status!=="WDROŻONE");
+  $("pulpit").innerHTML = `
+  <p class="sub" style="margin-top:0">Jeden ekran, 10 sekund. Każda liczba klikalna — prowadzi do listy albo karty projektu.</p>
+  <div class="grid g4">
+    <div class="card click" onclick="tabByName('pvw')">
+      <p class="eyebrow">Marża ${M.meta.rok_ytd} YTD · ${my.n} projektów</p>
+      <p class="kpi">${pct(my.real_pct)} <small>real</small></p>
+      <p class="delta ${my.delta<0?"down":"up"}">plan ${pct(my.plan_pct)} → ${my.delta<0?"":"+"}${tys(my.delta)} tys. zł</p>
+    </div>
+    <div class="card click" onclick="tabByName('pvw')">
+      <p class="eyebrow">Strefy odchyleń · YTD</p>
+      <p class="kpi" style="display:flex;gap:10px;align-items:baseline">
+        <span class="pill g"><span class="dot"></span>${s.zielona}</span>
+        <span class="pill y"><span class="dot"></span>${s.zolta}</span>
+        <span class="pill r"><span class="dot"></span>${s.czerwona}</span>
+      </p>
+      <p class="delta mid">progi: ≤${D.progi.strefy.zielona_max_pct}% · ≤${D.progi.strefy.zolta_max_pct}% · powyżej (progi.yaml)</p>
+    </div>
+    <div class="card click" onclick="tabByName('straty')">
+      <p class="eyebrow">Zagrożona marża 2025–26</p>
+      <p class="kpi down">${tys(k.zagrozona.top5+k.zagrozona.ogon)} <small>tys. zł</small></p>
+      <p class="delta">Top 5: ${tys(k.zagrozona.top5)} · ogon ${k.zagrozona.ogon_n} proj.: ${tys(k.zagrozona.ogon)}</p>
+    </div>
+    <div class="card click" onclick="tabByName('straty')">
+      <p class="eyebrow">Nierozliczone — dźwignia gotówki</p>
+      <p class="kpi mid">${tys(nz.luka_przychodu)} <small>tys. zł luki</small></p>
+      <p class="delta">${nz.niedofakturowane_n} niedofakturowanych · ${nz.bez_przychodu_n} bez przychodu (koszty ${tys(nz.bez_przychodu_koszty)} tys.)</p>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div class="section-head"><div><p class="eyebrow">Wskaźnik Deminga</p><h2>Błąd kalkulacji — trend</h2></div>
+      <span class="lbl">mediana |plan−real|/plan, zakończone</span></div>
+      <svg class="spark" viewBox="0 0 560 80" role="img" aria-label="Trend błędu kalkulacji">
+        <line x1="30" y1="66" x2="545" y2="66" stroke="var(--line)"/>
+        <polyline fill="none" stroke="var(--accent)" stroke-width="2.5"
+          points="${trPts.map(p=>p.x+","+p.y).join(" ")}"/>
+        ${trPts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===trPts.length-1?5:4}" fill="var(--accent)"/>`).join("")}
+        ${trPts.map(p=>`<text x="${p.x}" y="78" font-size="11" fill="var(--muted)" text-anchor="middle" font-weight="600">${esc(p.t.okres.replace("20",""))}</text>`).join("")}
+        ${trPts.map(p=>`<text x="${p.x}" y="${p.y-9}" font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">${pct(p.t.blad_pct,1)}</text>`).join("")}
+      </svg>
+      <p class="footnote">Okresy przed ${D.progi.trend.od_okresu} wyłączone — błąd &gt;100% wynika z braków w danych planu (patrz Jakość danych).</p>
+    </div>
+    <div class="card">
+      <div class="section-head"><div><p class="eyebrow">Brygady · aplikacja Start/Stop</p><h2>Utylizacja czasu</h2></div>
+      <span class="lbl">wpisy poprawne: ${fmt(u.produkcyjne_h+u.nieprodukcyjne_h)} h</span></div>
+      <div style="display:flex;height:26px;border-radius:6px;overflow:hidden;gap:2px">
+        <div style="flex:${u.produkcyjne_pct};background:var(--accent)"></div>
+        <div style="flex:${100-u.produkcyjne_pct};background:var(--warn)"></div>
+      </div>
+      <ul class="list" style="margin-top:8px">
+        <li><span class="dot" style="color:var(--accent)"></span> Produkcyjne <b style="margin-left:auto">${u.produkcyjne_pct}% · ${fmt(u.produkcyjne_h)} h</b></li>
+        <li><span class="dot" style="color:var(--warn)"></span> Dojazd / przerwy / sprzątanie / zabezp. <b style="margin-left:auto">${100-u.produkcyjne_pct}% · ${fmt(u.nieprodukcyjne_h)} h</b></li>
+      </ul>
+      <p class="footnote">Prawie połowa opłaconego czasu nie wytwarza metrów — szczegóły per zadanie i marża/rbh w zakładce Dźwignia. Po uzupełnieniu mapowania brygad (slowniki.yaml) sekcja pokaże zespoły zamiast sumy.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="section-head"><div><p class="eyebrow">Pętla PDCA</p><h2>Otwarte działania korygujące <span class="demo">WPISY STARTOWE</span></h2></div>
+    <a class="src" onclick="tabByName('karta')">notatki Act na kartach projektów →</a></div>
+    <div class="tscroll"><table>
+      <tr><th>Działanie (Act)</th><th>Obszar</th><th>Status</th></tr>
+      ${otwarte.map(x=>`<tr><td>${esc(x.opis)}</td><td class="lbl">${esc(x.obszar)}</td>
+        <td><span class="status-chip st-open">${esc(x.status)}</span></td></tr>`).join("")}
+    </table></div>
+  </div>`;
+}
+
+/* ---------- DŹWIGNIA ---------- */
+function rDzwignia(){
+  const dz = M.dzwignia;
+  const maxAbs = Math.max(...dz.typy.map(t=>Math.abs(t.mediana_pct||0)), 1);
+  const wiersz = (t)=>{ const v=t.mediana_pct||0, w=Math.min(Math.abs(v)/maxAbs*48,48);
+    return `<tr><td>${esc(t.nazwa)}</td><td class="num">${t.n}</td>
+    <td><div class="divbar"><span class="zero"></span><i style="${v>=0?`left:50%;width:${w}%;background:var(--crit)`:`right:50%;width:${w}%;background:var(--accent)`}"></i></div></td>
+    <td class="num ${v>5?"down":v<-5?"up":""}"><b>${v>0?"+":""}${pct(v)}</b></td></tr>`;};
+  $("dzwignia").innerHTML = `
+  <p class="eyebrow">Deming / PDCA — Check</p>
+  <h2>Powtarzalne wzorce → korekty standardów</h2>
+  <p class="sub">Systematyka, nie pojedyncze wpadki. Czerwone w prawo = koszty real ponad planem.</p>
+  <div class="grid g2">
+    <div class="card">
+      <p class="eyebrow">Per typ projektu · mediana odchylenia kosztów (${M.meta.pilotaz_n} zakończonych z kompletem)</p>
+      <div class="tscroll"><table><tr><th>Typ</th><th class="num">n</th><th>odchylenie</th><th class="num">mediana</th></tr>
+      ${dz.typy.map(wiersz).join("")}</table></div>
+      <p class="footnote">Systematyczne niedoszacowanie na górze tabeli to kandydaci na korektę normy kalkulacyjnej (wpis Act). Duży zapas na dole = ryzyko przegrywania przetargów.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Per kalkulujący · bias (mediana) vs rozrzut (IQR)</p>
+      <div class="tscroll"><table><tr><th>Osoba</th><th class="num">n</th><th class="num">bias</th><th class="num">rozrzut</th><th>recepta</th></tr>
+      ${dz.kalkulujacy.map(o=>`<tr><td>${esc(o.nazwa)}</td><td class="num">${o.n}</td>
+        <td class="num ${Math.abs(o.mediana_pct)>5?"mid":""}">${o.mediana_pct>0?"+":""}${pct(o.mediana_pct)}</td>
+        <td class="num ${o.iqr>50?"down":""}">±${pct(o.iqr,0)}</td>
+        <td class="lbl">${Math.abs(o.mediana_pct)>5?"<b>korekta standardu</b>":"—"}${o.iqr>50?" · <b>szkolenie</b> (rozrzut)":""}</td></tr>`).join("")}
+      </table></div>
+      <p class="footnote">Bias naprawia korekta normy; rozrzut — tylko szkolenie i standaryzacja. Dwie różne recepty, dlatego liczone osobno.</p>
+      <hr style="border:none;border-top:1px solid var(--line);margin:12px 0">
+      <p class="eyebrow">Normy real firmowe · z aplikacji brygad (wpisy poprawne, ≥2 projekty)</p>
+      <div class="tscroll"><table><tr><th>Zadanie</th><th class="num">mediana tempa</th><th class="num">projekty</th><th class="num">norma plan</th></tr>
+      ${dz.normy_firmowe.map(n=>`<tr><td>${esc(n.zadanie)}</td><td class="num"><b>${n.mediana}</b> ${esc(n.jednostka)}/h</td>
+        <td class="num">${n.n_projektow}</td><td class="num lbl">BRAK (D2)</td></tr>`).join("")}
+      </table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <p class="eyebrow">Marża na roboczogodzinę · projekty zakończone z danymi z aplikacji</p>
+    <div class="tscroll"><table><tr><th>Projekt</th><th class="num">h (czyste)</th><th class="num">marża real</th><th class="num">marża / rbh</th><th>uwaga</th></tr>
+    ${dz.marza_rbh.map(x=>`<tr class="click" onclick="openKarta(${x.id})"><td><b>${x.id}</b> ${esc(x.nazwa)}</td>
+      <td class="num">${x.h}</td><td class="num ${x.marza<0?"down":"up"}">${fmt(x.marza)}</td>
+      <td class="num ${x.marza_na_h<0?"down":"up"}"><b>${fmt(x.marza_na_h)} zł/h</b></td>
+      <td class="lbl">${x.lag_ryzyko?'<span class="pill y">nierozliczony — możliwy lag faktur</span>':'<span class="pill g">rozliczony</span>'}</td></tr>`).join("")}
+    </table></div>
+    <p class="footnote">To jest strategiczna miara brygad: która robota zarabia na godzinie. Ujemne wartości przy fladze „lag" to najpewniej przychód jeszcze niezaksięgowany, nie realna strata — dlatego ranking strat wyklucza świeże projekty. Stawka rbh (D3) pozwoli dodać koszt robocizny do rachunku.</p>
+  </div>`;
+}
+
+/* ---------- PLAN VS WYKONANIE ---------- */
+let filtr = {rok:"", status:"", strefa:"", typ:"", kalk:"", q:"", limit:50};
+function rPvw(){
+  const L = D.lista;
+  const opcje = (pole)=>[...new Set(L.map(x=>x[pole]).filter(Boolean))].sort();
+  const rows = L.filter(x=>
+    (!filtr.rok||x.rok===filtr.rok)&&(!filtr.status||x.status===filtr.status)&&
+    (!filtr.strefa||x.strefa===filtr.strefa)&&(!filtr.typ||x.typ===filtr.typ)&&
+    (!filtr.kalk||x.kalkulujacy===filtr.kalk)&&
+    (!filtr.q||x.nazwa.toLowerCase().includes(filtr.q)||String(x.id).includes(filtr.q)))
+    .sort((a,b)=>a.utrata-b.utrata);
+  const maxM = Math.max(...rows.slice(0,filtr.limit).map(r=>Math.max(Math.abs(r.marza_real),Math.abs(r.marza_plan))),1);
+  const sel=(id,pole,lista,label)=>`<select onchange="filtr.${pole}=this.value;filtr.limit=50;rPvw()">
+    <option value="">${label}: wszystkie</option>${lista.map(o=>`<option ${filtr[pole]===o?"selected":""}>${esc(o)}</option>`).join("")}</select>`;
+  $("pvw").innerHTML = `
+  <p class="eyebrow">Warstwa 2</p>
+  <h2>Lista projektów — plan vs wykonanie</h2>
+  <p class="sub">Sort: utracona marża malejąco. Pasek = marża real, znacznik | = marża plan. Klik = karta projektu.</p>
+  <div class="filters">
+    ${sel("f-rok","rok",opcje("rok"),"Rok")} ${sel("f-st","status",["w_realizacji","zakonczony","rozliczony"],"Status")}
+    ${sel("f-sz","strefa",["zielona","zolta","czerwona"],"Strefa")} ${sel("f-typ","typ",opcje("typ"),"Typ")}
+    ${sel("f-k","kalk",opcje("kalkulujacy"),"Kalkulujący")}
+    <input placeholder="szukaj (nazwa / ID)…" value="${esc(filtr.q)}" oninput="filtr.q=this.value.toLowerCase();filtr.limit=50;rPvw()">
+    <span class="lbl">${rows.length} z ${L.length}</span>
+  </div>
+  <div class="card"><div class="tscroll"><table>
+    <tr><th>Projekt</th><th>Typ</th><th>Kalk.</th><th>Marża real vs |plan</th><th class="num">utrata</th><th class="num">koszty</th><th>strefa</th></tr>
+    ${rows.slice(0,filtr.limit).map(r=>{
+      const w=Math.min(Math.abs(r.marza_real)/maxM*100,100), wp=Math.min(Math.abs(r.marza_plan)/maxM*100,100);
+      return `<tr class="click" onclick="openKarta(${r.id})">
+      <td><b>${r.id}</b> ${esc(r.nazwa.slice(0,55))}</td><td class="lbl">${esc((r.typ||"—").slice(0,22))}</td>
+      <td class="lbl">${esc(r.kalkulujacy||"—")}</td>
+      <td><div class="bar"><i class="${r.marza_real<0?"neg":""}" style="width:${w}%"></i><b style="left:${wp}%"></b></div></td>
+      <td class="num ${r.utrata<0?"down":""}">${r.utrata<0?"<b>":""}${tys(r.utrata)} tys.${r.utrata<0?"</b>":""}</td>
+      <td class="num ${r.odch>10?"down":r.odch<-10?"mid":""}">${r.odch==null?"—":(r.odch>0?"+":"")+pct(r.odch)}</td>
+      <td>${strefaPill(r.strefa)}</td></tr>`;}).join("")}
+  </table></div>
+  ${rows.length>filtr.limit?`<button class="act" onclick="filtr.limit+=100;rPvw()">pokaż więcej (${rows.length-filtr.limit})</button>`:""}
+  <p class="footnote">Projekty bez planu w Firmao mają strefę „brak planu" — nie wchodzą do metryk plan vs real (lista braków: Jakość danych).</p></div>`;
+}
+
+/* ---------- GDZIE TRACIMY ---------- */
+function rStraty(){
+  const top5 = M.top5_ids.map(id=>K[id]);
+  const nz = M.kafle.nierozliczone;
+  const niedof = Object.values(K).filter(k=>k.rozliczenia.niedofakturowany)
+    .sort((a,b)=>b.rozliczenia.luka_przychodu-a.rozliczenia.luka_przychodu).slice(0,8);
+  $("straty").innerHTML = `
+  <p class="eyebrow">Interwencje</p>
+  <h2>Gdzie tracimy — Top 5 utraconej marży (2025–26, po lagu)</h2>
+  <p class="sub">W złotówkach, nie w procentach. Świeżo zakończone nierozliczone (${M.meta.wykluczone_lagiem}) czekają ${M.meta.lag_dni} dni na zaksięgowanie faktur, zanim wpadną do rankingu.</p>
+  <div class="grid g3">
+    ${top5.map(k=>`<div class="card click" onclick="openKarta(${k.id})">
+      <p class="eyebrow">${k.id} · ${esc((k.typ||"—").slice(0,26))} · ${esc(k.kalkulujacy||"")}</p>
+      <h2 style="font-size:14.5px">${esc(k.nazwa.slice(0,60))}</h2>
+      <p class="kpi down">${tys(k.pochodne.utrata_marzy)} <small>tys. zł</small></p>
+      <p class="lbl">marża plan ${tys(k.plan.marza)} → real ${tys(k.real.marza)} tys. · koszty ${k.pochodne.odchylenie_kosztow_pct>0?"+":""}${pct(k.pochodne.odchylenie_kosztow_pct)}
+      ${k.pochodne.odchylenie_kosztow_pct<-20?" — <b>problem po stronie przychodu / planu</b>":k.pochodne.odchylenie_kosztow_pct>20?" — <b>przepalony budżet</b>":""}</p>
+    </div>`).join("")}
+    <div class="card" style="border-style:dashed">
+      <p class="eyebrow">Ogon poza Top 5 — nie znika z radaru</p>
+      <p class="kpi down">${tys(M.kafle.zagrozona.ogon)} <small>tys. zł</small></p>
+      <p class="lbl"><b>${M.kafle.zagrozona.ogon_n} projektów</b> pod planem marży. Pełna lista w „Plan vs Wykonanie".</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <p class="eyebrow">Nierozliczone — największa pojedyncza dźwignia gotówki</p>
+    <p class="sub">Zakończone projekty z przychodem poniżej ${Math.round(D.progi.rozliczenia.prog_niedofakturowania*100)}% planu:
+      <b>${nz.niedofakturowane_n} szt., luka ${tys(nz.luka_przychodu)} tys. zł</b> ·
+      bez ani złotówki przychodu: <b>${nz.bez_przychodu_n} szt.</b> (poniesione koszty ${tys(nz.bez_przychodu_koszty)} tys.)</p>
+    <div class="tscroll"><table><tr><th>Projekt</th><th class="num">plan przychodu</th><th class="num">real</th><th class="num">luka</th></tr>
+    ${niedof.map(k=>`<tr class="click" onclick="openKarta(${k.id})"><td><b>${k.id}</b> ${esc(k.nazwa.slice(0,55))}</td>
+      <td class="num">${fmt(k.plan.przychod)}</td><td class="num">${fmt(k.real.przychod)}</td>
+      <td class="num down"><b>${fmt(k.rozliczenia.luka_przychodu)}</b></td></tr>`).join("")}
+    </table></div>
+    <p class="footnote">Uwaga interpretacyjna: część luki może być zasadna (rabat, zmniejszony zakres) albo wynikać ze statusów. Ale każdą pozycję trzeba obejrzeć — to jest lista do przejścia z działem rozliczeń (wpis PDCA-02).</p>
+  </div>`;
+}
+
+/* ---------- JAKOŚĆ DANYCH ---------- */
+function rJakosc(){
+  const R = D.rzetelnosc_osob;
+  let hOdrz=0,hOk=0,wOdrz=0,wOk=0;
+  Object.values(K).forEach(k=>{ if(k.czas_pracy){ hOdrz+=k.czas_pracy.h_odrzucone_anomalie;
+    hOk+=k.czas_pracy.h_produkcyjne+k.czas_pracy.h_nieprodukcyjne;
+    wOdrz+=k.czas_pracy.wpisy_odrzucone; wOk+=k.czas_pracy.wpisy_ok; }});
+  const bezPlanu = D.lista.filter(x=>!x.komplet && x.status!=="w_realizacji").length;
+  $("jakosc").innerHTML = `
+  <p class="eyebrow">Kaizen — pulpit wymusza jakość danych</p>
+  <h2>Jakość danych — co blokuje które metryki</h2>
+  <p class="sub">Zła dana nie psuje marży na pulpicie — ląduje tutaj. Pełny rejestr odrzuconych: <b>data/ODRZUCONE.md</b>.</p>
+  <div class="grid g3">
+    <div class="card"><p class="eyebrow">Godziny w anomaliach</p><p class="kpi down">${Math.round(100*hOdrz/(hOdrz+hOk))}%</p>
+      <p class="lbl">${fmt(hOdrz)} h odrzucone (zapomniany STOP/START), ${fmt(hOk)} h weszło do metryk</p></div>
+    <div class="card"><p class="eyebrow">Wpisy odrzucone</p><p class="kpi mid">${wOdrz} / ${wOdrz+wOk}</p>
+      <p class="lbl">próg: ${D.progi.czas_pracy.max_godzin_wpisu} h/wpis (progi.yaml)</p></div>
+    <div class="card"><p class="eyebrow">Zakończone bez kompletu plan+real</p><p class="kpi mid">${bezPlanu}</p>
+      <p class="lbl">projekty poza pilotażem — brak planu kosztów lub przychodu w Firmao</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <p class="eyebrow">Rzetelność wpisów per pracownik · % wpisów poprawnych</p>
+      <div class="tscroll"><table><tr><th>Pracownik</th><th class="num">wpisy</th><th>pasek</th><th class="num">%</th></tr>
+      ${R.map(o=>`<tr><td>${esc(o.osoba)}</td><td class="num">${o.wpisy}</td>
+        <td><div class="bar"><i style="width:${o.rzetelnosc_pct}%;background:var(--${o.rzetelnosc_pct>=60?"good":o.rzetelnosc_pct>=35?"warn":"crit"})"></i></div></td>
+        <td class="num"><b>${o.rzetelnosc_pct}%</b></td></tr>`).join("")}
+      </table></div>
+      <p class="footnote">Wskaźnik dyscypliny klikania Start/Stop, nie oceny pracy. Cel po szkoleniu (PDCA-03): &gt;90%.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Braki blokujące metryki · decyzje</p>
+      <ul class="list">
+        <li><span class="status-chip st-open">D1</span> Eksport z aplikacji z datami — blokuje run-rate i trendy brygad</li>
+        <li><span class="status-chip st-open">D2</span> Plan ilości + godzin w Firmao — blokuje normy plan vs real</li>
+        <li><span class="status-chip st-open">D3</span> Stawki rbh i km (slowniki.yaml) — blokuje prognozy w PLN</li>
+        <li><span class="status-chip st-open">D5</span> Mapowanie osoba→brygada (slowniki.yaml) — blokuje widok brygad</li>
+        <li><span class="status-chip st-open">K1</span> Faktury→projekt (eksport transakcji Firmao) — blokuje koszty per kategoria</li>
+        <li><span class="status-chip st-prog">K2</span> Słownik pól custom Firmao — pytania P4–P6 czekają</li>
+        <li><span class="status-chip st-open">D7</span> API Firmao — blokuje świeżość (dziś: ${M.meta.data_zrzutu})</li>
+      </ul>
+      <p class="footnote">Każda pozycja odblokowuje konkretną sekcję pulpitu bez przebudowy — architektura czeka z gotowym miejscem.</p>
+    </div>
+  </div>`;
+}
+
+/* ---------- KARTA PROJEKTU ---------- */
+let aktualnaKarta = null;
+function openKarta(id){ aktualnaKarta = String(id); tabByName("karta"); }
+function rKarta(){
+  const wybor = `<div class="filters"><input id="k-szukaj" placeholder="wpisz ID albo fragment nazwy…" style="min-width:280px">
+    <span class="lbl">albo kliknij projekt w dowolnej tabeli</span></div><div id="k-wyniki"></div><div id="k-tresc"></div>`;
+  $("karta").innerHTML = `<p class="eyebrow">Warstwa 3 · drill-down</p><h2>Karta projektu</h2>
+  <p class="sub">Pełny obraz jednego projektu: plan vs real, czas brygad, rozliczenie, notatki Act. Braki danych pokazujemy wprost.</p>${wybor}`;
+  $("k-szukaj").addEventListener("input", e=>{
+    const q=e.target.value.toLowerCase(); if(q.length<2){$("k-wyniki").innerHTML="";return;}
+    const hits=D.lista.filter(x=>String(x.id).includes(q)||x.nazwa.toLowerCase().includes(q)).slice(0,8);
+    $("k-wyniki").innerHTML = `<ul class="list" style="margin-bottom:12px">${hits.map(h=>
+      `<li style="cursor:pointer" onclick="openKarta(${h.id})"><b>${h.id}</b> ${esc(h.nazwa.slice(0,70))} <span class="lbl" style="margin-left:auto">${STATUS_PL[h.status]}</span></li>`).join("")}</ul>`;
+  });
+  if(aktualnaKarta && K[aktualnaKarta]) rKartaTresc(K[aktualnaKarta]);
+}
+function rKartaTresc(k){
+  const cz = k.czas_pracy, ile = k.plan.ilosc;
+  const notka = notatki[k.id] || "";
+  let zakres = "";
+  if(ile && cz){
+    const nrm = cz.normy.find(n=>n.jednostka.toLowerCase().includes(ile.jednostka==="mb"?"bież":"kwadrat"));
+    if(nrm){ const p=Math.min(100*nrm.wykonano/ile.wartosc,100);
+      zakres = `<p class="lbl" style="margin:6px 0 2px">Zakres (${esc(nrm.zadanie)}: ${nrm.wykonano} / ${ile.wartosc} ${ile.jednostka})</p>
+      <div class="bar" style="height:18px"><i style="width:${p}%"></i></div><p class="delta">${Math.round(p)}% · plan ilości: ${esc(ile.zrodlo)}</p>`;}
+  }
+  $("k-tresc").innerHTML = `
+  <div class="section-head" style="margin-top:6px">
+    <div><h2>${k.id} · ${esc(k.nazwa)}</h2>
+    <p class="sub">${STATUS_PL[k.status]} · klient: ${esc(k.klient||"—")} · typ: ${esc(k.typ||"—")} · technologia: ${esc(k.technologia||"—")}<br>
+    kalkulował (konto Firmao): ${esc(k.kalkulujacy||"—")}${k.kalkulujacy_oferta?` · oferta wystawiona przez: ${esc(k.kalkulujacy_oferta)}`:""} ·
+    start ${k.daty.start||"—"} · koniec ${k.daty.koniec||"—"}</p></div>
+    ${strefaPill(k.pochodne.strefa)}
+  </div>
+  <div class="grid g3">
+    <div class="card">
+      <p class="eyebrow">Wynik finansowy</p>
+      <div class="tscroll"><table>
+        <tr><th></th><th class="num">plan</th><th class="num">real</th><th class="num">odchylenie</th></tr>
+        <tr><td>Przychód</td><td class="num">${fmt(k.plan.przychod)}</td><td class="num">${fmt(k.real.przychod)}</td>
+          <td class="num">${k.plan.przychod>0?fmt(k.real.przychod-k.plan.przychod):"—"}</td></tr>
+        <tr><td>Koszty</td><td class="num">${fmt(k.plan.koszty)}</td><td class="num">${fmt(k.real.koszty)}</td>
+          <td class="num ${k.pochodne.odchylenie_kosztow_pct>10?"down":""}">${k.pochodne.odchylenie_kosztow_pct==null?"—":(k.pochodne.odchylenie_kosztow_pct>0?"+":"")+pct(k.pochodne.odchylenie_kosztow_pct)}</td></tr>
+        <tr><td><b>Marża</b></td><td class="num"><b>${fmt(k.plan.marza)}</b></td>
+          <td class="num ${k.real.marza<0?"down":""}"><b>${fmt(k.real.marza)}</b></td>
+          <td class="num ${k.pochodne.utrata_marzy<0?"down":"up"}"><b>${fmt(k.pochodne.utrata_marzy)}</b></td></tr>
+      </table></div>
+      ${k.rozliczenia.bez_przychodu?`<p class="footnote down"><b>⚠ Zakończony bez przychodu</b> — koszty ${fmt(k.real.koszty)} zł czekają na fakturę/rozliczenie.</p>`:""}
+      ${k.rozliczenia.niedofakturowany?`<p class="footnote mid"><b>⚠ Niedofakturowany</b> — luka przychodu ${fmt(k.rozliczenia.luka_przychodu)} zł vs plan.</p>`:""}
+    </div>
+    <div class="card">
+      <p class="eyebrow">Kategorie kosztów · plan vs real</p>
+      <div class="tscroll"><table>
+        <tr><th>Kategoria</th><th class="num">plan</th><th class="num">real</th></tr>
+        <tr><td>Materiały / towary</td><td class="num lbl" colspan="2">BRAK — czeka na K1/K2</td></tr>
+        <tr><td>Robocizna</td><td class="num lbl">BRAK (D2/D3)</td><td class="num">${cz?fmt(cz.h_produkcyjne+cz.h_nieprodukcyjne)+" h":'<span class="lbl">brak danych z aplikacji</span>'}</td></tr>
+        <tr><td>Podwykonawcy / transport</td><td class="num lbl" colspan="2">BRAK — czeka na K1/D3</td></tr>
+        <tr><td><b>Suma (agregat Firmao)</b></td><td class="num"><b>${fmt(k.plan.koszty)}</b></td><td class="num"><b>${fmt(k.real.koszty)}</b></td></tr>
+      </table></div>
+      ${zakres}
+    </div>
+    <div class="card">
+      <p class="eyebrow">Czas pracy brygad ${cz?"":"· brak danych z aplikacji dla tego projektu"}</p>
+      ${cz?`<p class="lbl">${cz.wpisy_ok} wpisów OK · ${cz.wpisy_odrzucone} odrzuconych (${fmt(cz.h_odrzucone_anomalie)} h w anomaliach)</p>
+      <div class="tscroll"><table><tr><th>Zadanie (normy)</th><th class="num">wykonano</th><th class="num">h</th><th class="num">tempo</th></tr>
+      ${cz.normy.map(n=>`<tr><td>${esc(n.zadanie)}</td><td class="num">${n.wykonano} ${esc(n.jednostka)}</td>
+        <td class="num">${n.godziny}</td><td class="num"><b>${n.tempo_na_h}/h</b></td></tr>`).join("")||'<tr><td colspan="4" class="lbl">brak zadań z metryką produkcji</td></tr>'}
+      </table></div>`:`<p class="lbl">Ten projekt nie występuje w eksportach z aplikacji Start/Stop (katalog dane_czas_pracy/).</p>`}
+    </div>
+  </div>
+  ${cz?`<div class="card" style="margin-top:12px"><p class="eyebrow">Wpisy czasu — rekordy źródłowe (audytowalność)</p>
+  <div class="tscroll"><table><tr><th>Zadanie</th><th>Osoba</th><th class="num">h</th><th>status</th></tr>
+  ${cz.wpisy.map(w=>`<tr><td>${esc(w.zadanie)}</td><td>${esc(w.osoba)}</td><td class="num">${w.h}</td>
+    <td>${w.status==="OK"?'<span class="pill g">OK</span>':w.status==="PUSTY"?'<span class="pill n">pusty</span>':`<span class="pill r">${esc(w.status)}</span>`}</td></tr>`).join("")}
+  </table></div></div>`:""}
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <p class="eyebrow">Źródła danych projektu</p>
+      <ul class="list">
+        <li>Oferty / zlecenia (Firmao) <b style="margin-left:auto">${k.zrodla.oferty}</b></li>
+        <li>Notatki (Firmao) <b style="margin-left:auto">${k.zrodla.notatki}</b></li>
+        <li>Wpisy czasu (aplikacja) <b style="margin-left:auto">${cz?cz.wpisy.length:0}</b></li>
+        <li>Faktury <span class="pill y" style="margin-left:auto">czeka na K1</span></li>
+      </ul>
+      ${k.braki.length?`<p class="footnote">Braki tej karty: ${k.braki.map(esc).join(" · ")}</p>`:""}
+    </div>
+    <div class="card">
+      <p class="eyebrow">Notatka / decyzja korygująca (Act — zapis lokalny w przeglądarce)</p>
+      <textarea id="k-notka" placeholder="np. 06.07 — DYR: dojazdy łączyć z sąsiednim projektem…">${esc(notka)}</textarea>
+      <button class="act" onclick="zapiszNotke(${k.id})">Zapisz notatkę</button>
+      <p class="footnote">Docelowo: zapis do rejestru PDCA w repozytorium (Faza 4). Dziś notatki żyją w Twojej przeglądarce (localStorage).</p>
+    </div>
+  </div>`;
+}
+function zapiszNotke(id){
+  notatki[id] = $("k-notka").value;
+  localStorage.setItem("pdca_notatki", JSON.stringify(notatki));
+  alert("Zapisano notatkę dla projektu "+id);
+}
+
+/* ---------- nawigacja ---------- */
+const RENDER = {pulpit:rPulpit, dzwignia:rDzwignia, pvw:rPvw, straty:rStraty, jakosc:rJakosc, karta:rKarta};
+function tab(id, btn){
+  document.querySelectorAll("main section").forEach(s=>s.classList.toggle("on", s.id===id));
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected", b===btn?"true":"false"));
+  RENDER[id]();
+  window.scrollTo({top:0});
+}
+function tabByName(id){
+  const i={pulpit:0,dzwignia:1,pvw:2,straty:3,jakosc:4,karta:5}[id];
+  tab(id, document.querySelectorAll("nav button")[i]);
+}
+function tg(){
+  const r=document.documentElement;
+  const cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  r.setAttribute("data-theme", cur==="dark"?"light":"dark");
+}
+rPulpit();
+</script>
+</body>
+</html>
