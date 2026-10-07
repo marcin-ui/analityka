@@ -1,0 +1,509 @@
+<title>Szkielet pulpitu — Projekty</title>
+<style>
+:root{
+  --bg:#F4F5F3; --surface:#FFFFFF; --ink:#18222C; --muted:#5B6875; --line:#DDE2E1;
+  --accent:#1D6FB8; --accent-soft:#E3EEF8;
+  --good:#2E7D4F; --good-bg:#E4F0E8; --warn:#B7791F; --warn-bg:#F7EEDD; --crit:#B3362B; --crit-bg:#F8E7E4;
+  --chip:#EDF0EE;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12181F; --surface:#1B242E; --ink:#E7ECF1; --muted:#93A1AE; --line:#2C3742;
+  --accent:#4E92D4; --accent-soft:#1E3A52;
+  --good:#5FAE7F; --good-bg:#1D2F26; --warn:#D0A24A; --warn-bg:#332A18; --crit:#D4726A; --crit-bg:#361E1B;
+  --chip:#232E39;
+}}
+:root[data-theme="dark"]{
+  --bg:#12181F; --surface:#1B242E; --ink:#E7ECF1; --muted:#93A1AE; --line:#2C3742;
+  --accent:#4E92D4; --accent-soft:#1E3A52;
+  --good:#5FAE7F; --good-bg:#1D2F26; --warn:#D0A24A; --warn-bg:#332A18; --crit:#D4726A; --crit-bg:#361E1B;
+  --chip:#232E39;
+}
+:root[data-theme="light"]{
+  --bg:#F4F5F3; --surface:#FFFFFF; --ink:#18222C; --muted:#5B6875; --line:#DDE2E1;
+  --accent:#1D6FB8; --accent-soft:#E3EEF8;
+  --good:#2E7D4F; --good-bg:#E4F0E8; --warn:#B7791F; --warn-bg:#F7EEDD; --crit:#B3362B; --crit-bg:#F8E7E4;
+  --chip:#EDF0EE;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+header{position:sticky;top:0;z-index:9;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0 0}
+.hrow{max-width:1180px;margin:0 auto;padding:0 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
+h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:12.5px}
+.badge-mock{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--warn);background:var(--warn-bg);border-radius:4px;padding:2px 8px}
+nav{max-width:1180px;margin:6px auto 0;padding:0 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font:600 13px/1 inherit;font-family:inherit;padding:9px 14px;border-radius:8px 8px 0 0;border-bottom:none;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main section{display:none;padding-top:18px}
+main section.on{display:block}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+h2{font-size:16px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card.click{cursor:pointer}
+.card.click:hover{border-color:var(--accent)}
+.kpi{font-size:26px;font-weight:750;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0}
+.kpi small{font-size:14px;font-weight:600;color:var(--muted)}
+.delta{font-size:13px;font-weight:650;font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .down{color:var(--crit)} .mid{color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.pill.g{background:var(--good-bg);color:var(--good)} .pill.y{background:var(--warn-bg);color:var(--warn)} .pill.r{background:var(--crit-bg);color:var(--crit)}
+.dot{width:8px;height:8px;border-radius:99px;background:currentColor;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;font-weight:700;
+  padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--accent-soft)}
+.num{text-align:right;white-space:nowrap}
+.tscroll{overflow-x:auto}
+.bar{position:relative;height:14px;border-radius:4px;background:var(--chip);min-width:120px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--accent)}
+.bar i.neg{background:var(--crit)}
+.bar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.65}/* znacznik PLAN */
+.divbar{display:flex;align-items:center;gap:8px}
+.divbar .lane{position:relative;flex:1;height:14px;background:var(--chip);border-radius:4px}
+.divbar .lane i{position:absolute;top:0;bottom:0;border-radius:4px}
+.divbar .zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;background:var(--muted);opacity:.6}
+.lbl{font-size:12px;color:var(--muted)}
+.footnote{font-size:12px;color:var(--muted);margin-top:10px}
+.demo{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--muted);border:1px dashed var(--line);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.gap-note{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600}
+.list{margin:0;padding:0;list-style:none}
+.list li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.list li:last-child{border-bottom:none}
+.status-chip{font-size:11px;font-weight:700;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.st-open{background:var(--crit-bg);color:var(--crit)} .st-prog{background:var(--warn-bg);color:var(--warn)} .st-done{background:var(--good-bg);color:var(--good)}
+.crumb{display:none;margin:0 0 12px;font-size:13px;color:var(--muted)}
+.crumb.on{display:block}
+.crumb b{color:var(--accent)}
+.spark{width:100%;height:74px}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+a.src{color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:650;cursor:pointer}
+a.src:hover{text-decoration:underline}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.filters span{font-size:12px;font-weight:650;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 12px;color:var(--muted)}
+.filters span.act{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.theme-btn{margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:4px 10px;font:600 12px/1.4 inherit;cursor:pointer}
+@media (prefers-reduced-motion: no-preference){ main section.on{animation:f .18s ease} @keyframes f{from{opacity:.4}to{opacity:1}} }
+</style>
+
+<header>
+  <div class="hrow">
+    <h1>Projekty — pulpit zarządczy</h1>
+    <span class="meta">Zakres: GRUPA · dane z eksportów: 11.06.2026</span>
+    <span class="badge-mock">Makieta · liczby rzeczywiste</span>
+    <button class="theme-btn" onclick="tg()">◐ motyw</button>
+  </div>
+  <nav role="tablist">
+    <button role="tab" aria-selected="true"  onclick="tab('pulpit',this)">📊 Pulpit</button>
+    <button role="tab" aria-selected="false" onclick="tab('dzwignia',this)">📈 Dźwignia</button>
+    <button role="tab" aria-selected="false" onclick="tab('pvw',this)">🎯 Plan vs Wykonanie</button>
+    <button role="tab" aria-selected="false" onclick="tab('straty',this)">🔻 Gdzie tracimy</button>
+    <button role="tab" aria-selected="false" onclick="tab('jakosc',this)">✓ Jakość danych</button>
+    <button role="tab" aria-selected="false" onclick="tab('karta',this)">📁 Karta projektu</button>
+  </nav>
+</header>
+
+<div class="wrap"><main>
+
+<!-- ================= PULPIT ================= -->
+<section id="pulpit" class="on">
+  <p class="sub" style="margin-top:0">Jeden ekran, 10 sekund. Wszystko klikalne — każda liczba prowadzi do listy albo karty projektu.</p>
+  <div class="grid g4">
+    <div class="card click" onclick="tabByName('pvw')">
+      <p class="eyebrow">Marża 2026 YTD · 77 projektów</p>
+      <p class="kpi">13,0% <small>real</small></p>
+      <p class="delta down">plan 15,1% → −2,1 p.p. · −48,8 tys. zł</p>
+    </div>
+    <div class="card click" onclick="tabByName('pvw')">
+      <p class="eyebrow">Strefy odchyleń · YTD</p>
+      <p class="kpi" style="display:flex;gap:10px;align-items:baseline">
+        <span class="pill g"><span class="dot"></span>59</span>
+        <span class="pill y"><span class="dot"></span>2</span>
+        <span class="pill r"><span class="dot"></span>16</span>
+      </p>
+      <p class="delta mid">próg: ≤5% · 5–10% · &gt;10% (progi.yaml)</p>
+    </div>
+    <div class="card click" onclick="tabByName('straty')">
+      <p class="eyebrow">Zagrożona marża 2025–26</p>
+      <p class="kpi down">−593,9 <small>tys. zł</small></p>
+      <p class="delta">Top 5: −258,4 · pozostałe 80 proj.: −335,5</p>
+    </div>
+    <div class="card click" onclick="tabByName('jakosc')">
+      <p class="eyebrow">Alerty · nowe <span class="demo">PRZYKŁAD</span></p>
+      <p class="kpi mid">7</p>
+      <p class="delta">3 tempo · 2 brak kosztów &gt;14 dni · 2 marża&lt;min</p>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div class="section-head"><div><p class="eyebrow">Wskaźnik Deminga</p><h2>Błąd kalkulacji — trend</h2></div>
+        <span class="lbl">mediana |plan−real| / plan, projekty zakończone</span></div>
+      <svg class="spark" viewBox="0 0 560 74" role="img" aria-label="Trend błędu kalkulacji od 2024 H1 do 2026 H1: 62,5%, 14,3%, 14,9%, 16,3%, 11,4%">
+        <line x1="30" y1="60" x2="545" y2="60" stroke="var(--line)"/>
+        <polyline fill="none" stroke="var(--accent)" stroke-width="2.5"
+          points="55,10 175,49 295,48 415,47 535,52"/>
+        <g fill="var(--accent)">
+          <circle cx="55" cy="10" r="4"/><circle cx="175" cy="49" r="4"/><circle cx="295" cy="48" r="4"/>
+          <circle cx="415" cy="47" r="4"/><circle cx="535" cy="52" r="5" stroke="var(--surface)" stroke-width="2"/>
+        </g>
+        <g font-size="11" fill="var(--muted)" text-anchor="middle" font-weight="600">
+          <text x="55" y="72">24 H1</text><text x="175" y="72">24 H2</text><text x="295" y="72">25 H1</text>
+          <text x="415" y="72">25 H2</text><text x="535" y="72">26 H1</text>
+        </g>
+        <g font-size="11.5" font-weight="700" fill="var(--ink)" text-anchor="middle">
+          <text x="55" y="26">62,5%</text><text x="175" y="42">14,3%</text><text x="295" y="41">14,9%</text>
+          <text x="415" y="40">16,3%</text><text x="535" y="45">11,4%</text>
+        </g>
+      </svg>
+      <p class="footnote">Kierunek dobry: 14,3 → 11,4% przez ostatnie 2 lata. Okresy 2021–23 wyłączone — błąd &gt;100% wynika z braków w danych plan (patrz Jakość danych).</p>
+    </div>
+    <div class="card">
+      <div class="section-head"><div><p class="eyebrow">Brygady · z aplikacji Start/Stop</p><h2>Utylizacja czasu — bieżący okres</h2></div>
+        <span class="lbl">tylko wpisy poprawne (536 h)</span></div>
+      <div style="display:flex;height:26px;border-radius:6px;overflow:hidden;gap:2px" role="img" aria-label="Produkcyjne 52%, dojazd 29%, sprzątanie 13%, przerwy 6%">
+        <div style="flex:52;background:var(--accent)"></div>
+        <div style="flex:29;background:var(--warn)"></div>
+        <div style="flex:13;background:var(--muted);opacity:.55"></div>
+        <div style="flex:6;background:var(--muted);opacity:.3"></div>
+      </div>
+      <ul class="list" style="margin-top:8px">
+        <li><span class="dot" style="color:var(--accent)"></span> Produkcyjne (kucie, nacinanie, szlif…) <b style="margin-left:auto">52%</b></li>
+        <li><span class="dot" style="color:var(--warn)"></span> Dojazd <b style="margin-left:auto">29%</b></li>
+        <li><span class="dot" style="color:var(--muted);opacity:.55"></span> Sprzątanie <b style="margin-left:auto">13%</b></li>
+        <li><span class="dot" style="color:var(--muted);opacity:.3"></span> Przerwy <b style="margin-left:auto">6%</b></li>
+      </ul>
+      <p class="footnote">Prawie połowa opłaconego czasu nie wytwarza metrów — dźwignia nr 1 do analizy (zakładka Dźwignia).</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="section-head"><div><p class="eyebrow">Pętla PDCA</p><h2>Otwarte działania korygujące <span class="demo">PRZYKŁADOWE WPISY</span></h2></div>
+      <a class="src" onclick="tabByName('karta')">pełna historia na kartach projektów →</a></div>
+    <div class="tscroll"><table>
+      <tr><th>Działanie (Act)</th><th>Projekt / obszar</th><th>Właściciel</th><th>Termin</th><th>Status</th></tr>
+      <tr><td>Korekta normy kalkulacyjnej: nacinanie AGRO 10 → 15 mb/h</td><td>standard firmowy</td><td>DYR</td><td>15.07</td><td><span class="status-chip st-open">OTWARTE</span></td></tr>
+      <tr class="click" onclick="openKarta(1195)"><td>Analiza straty −42,1 tys.: skąd koszt bez przychodu</td><td>1195 CUBATO Trzebiny</td><td>KP-SA</td><td>10.07</td><td><span class="status-chip st-prog">W ANALIZIE</span></td></tr>
+      <tr><td>Szkolenie brygad: obowiązek STOP w aplikacji (85% godzin w błędnych wpisach)</td><td>wszystkie brygady</td><td>QC</td><td>20.07</td><td><span class="status-chip st-open">OTWARTE</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ================= DŹWIGNIA ================= -->
+<section id="dzwignia">
+  <p class="eyebrow">Deming / PDCA — Check</p>
+  <h2>Powtarzalne wzorce → korekty standardów</h2>
+  <p class="sub">Nie pojedyncze wpadki, tylko systematyka: gdzie firma myli się ZAWSZE tak samo. Stąd biorą się wpisy Act w pętli PDCA.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <p class="eyebrow">Per typ projektu · mediana przekroczenia kosztów (685 zakończonych)</p>
+      <div class="tscroll"><table>
+        <tr><th>Typ</th><th class="num">n</th><th>odchylenie</th><th class="num">mediana</th></tr>
+        <tr><td>KUBATUROWE — deweloperskie</td><td class="num">22</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="left:50%;width:42%;background:var(--crit)"></i></div></div></td>
+          <td class="num down"><b>+16,9%</b></td></tr>
+        <tr><td>AGRO</td><td class="num">57</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="left:50%;width:21%;background:var(--crit)"></i></div></div></td>
+          <td class="num down"><b>+8,3%</b></td></tr>
+        <tr><td>SPECJALISTYCZNE / inne</td><td class="num">33</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="left:50%;width:5%;background:var(--crit)"></i></div></div></td>
+          <td class="num">+1,8%</td></tr>
+        <tr><td>KUBATUROWE — garaże i parkingi</td><td class="num">251</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="left:50%;width:4%;background:var(--crit)"></i></div></div></td>
+          <td class="num">+1,7%</td></tr>
+        <tr><td>KUBATUROWE — handlowe</td><td class="num">33</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="right:50%;width:11%;background:var(--accent)"></i></div></div></td>
+          <td class="num">−4,4%</td></tr>
+        <tr><td>PRZEMYSŁ — magazyn</td><td class="num">25</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="right:50%;width:15%;background:var(--accent)"></i></div></div></td>
+          <td class="num">−5,8%</td></tr>
+        <tr><td>PRZEMYSŁ — hala produkcyjna</td><td class="num">77</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="right:50%;width:22%;background:var(--accent)"></i></div></div></td>
+          <td class="num up">−8,7%</td></tr>
+        <tr><td>PRZEMYSŁ — magazyn VNA</td><td class="num">71</td>
+          <td><div class="divbar"><div class="lane"><span class="zero"></span><i style="right:50%;width:38%;background:var(--accent)"></i></div></div></td>
+          <td class="num up">−15,1%</td></tr>
+      </table></div>
+      <p class="footnote">Czerwone w prawo = koszty real powyżej planu. <b>Deweloperka i AGRO systematycznie niedoszacowane</b>; VNA liczone z dużym zapasem (−15% też jest błędem kalkulacji — przegrywamy tam przetargi?).</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Per kalkulujący · bias vs rozrzut</p>
+      <div class="tscroll"><table>
+        <tr><th>Osoba</th><th class="num">n</th><th class="num">bias (mediana)</th><th class="num">rozrzut (IQR)</th><th>diagnoza → działanie</th></tr>
+        <tr><td>KP — D.P.</td><td class="num">462</td><td class="num">−0,4%</td><td class="num down"><b>±109%</b></td><td class="lbl">bez biasu, ogromny rozrzut → <b>szkolenie / checklista</b></td></tr>
+        <tr><td>KP — S.A.</td><td class="num">135</td><td class="num">−6,7%</td><td class="num mid">±74%</td><td class="lbl">lekko zawyża budżety, duży rozrzut → szkolenie</td></tr>
+        <tr><td>wsparcie — Marta</td><td class="num">86</td><td class="num mid">−8,7%</td><td class="num up">±17%</td><td class="lbl">stabilnie zawyża → <b>korekta standardu o −8%</b></td></tr>
+      </table></div>
+      <p class="footnote">Bias naprawia korekta normy w standardzie kalkulacji; rozrzut — tylko szkolenie i standaryzacja procesu. To dwie różne recepty — dlatego liczymy osobno.</p>
+      <hr style="border:none;border-top:1px solid var(--line);margin:12px 0">
+      <p class="eyebrow">Normy real · z aplikacji brygad (wpisy poprawne)</p>
+      <div class="tscroll"><table>
+        <tr><th>Zadanie</th><th class="num">real</th><th class="num">norma firmowa</th><th>ocena</th></tr>
+        <tr><td>Nacinanie odwodnień (proj. 1226/1228/1227)</td><td class="num"><b>16,3–19,6 mb/h</b></td><td class="num lbl">BRAK (D2)</td><td><span class="pill y">ustal normę</span></td></tr>
+        <tr><td>Trasowanie</td><td class="num">22,8–27,6 mb/h</td><td class="num lbl">BRAK (D2)</td><td><span class="pill y">ustal normę</span></td></tr>
+        <tr><td>Szlifowanie DSM</td><td class="num">7,0–10,4 m²/h</td><td class="num lbl">BRAK (D2)</td><td><span class="pill y">ustal normę</span></td></tr>
+      </table></div>
+      <p class="footnote">Tempo realne już mierzymy — brakuje strony „plan": pól ilość + godziny w Firmao (decyzja D2). Wtedy ta tabela pokaże „5 mb/h zamiast 10 mb/h — wąskie gardło: robocizna".</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAN VS WYKONANIE ================= -->
+<section id="pvw">
+  <p class="eyebrow">Warstwa 2</p>
+  <h2>Lista projektów — plan vs wykonanie</h2>
+  <p class="sub">Domyślnie: utracona marża malejąco. Filtry trzymane w adresie URL — każdy widok da się wysłać linkiem.</p>
+  <div class="filters">
+    <span class="act">Okres: 2025–2026</span><span>Status: wszystkie</span><span>Typ: wszystkie</span>
+    <span>Kalkulujący: wszyscy</span><span>Strefa: wszystkie</span><span class="act">Sort: utrata marży ↓</span>
+  </div>
+  <div class="card"><div class="tscroll"><table>
+    <tr><th>Projekt</th><th>Typ</th><th>Kalk.</th><th>Marża: real vs <b>|</b>plan</th><th class="num">utrata</th><th class="num">koszty</th><th>strefa</th></tr>
+    <tr class="click" onclick="openKarta(1041)"><td><b>1041</b> Dekpol/Targówek/naprawy posadzki garaż</td><td class="lbl">KUBAT. handlowe</td><td class="lbl">KP-DP</td>
+      <td><div class="bar"><i style="width:23%"></i><b style="left:62%"></b></div></td>
+      <td class="num down"><b>−115,3 tys.</b></td><td class="num up">−36,0%</td><td><span class="pill r">przychód!</span></td></tr>
+    <tr class="click" onclick="openKarta(1195)"><td><b>1195</b> CUBATO nacinanie karo 1000 m² Trzebiny</td><td class="lbl">AGRO</td><td class="lbl">Marta</td>
+      <td><div class="bar"><i class="neg" style="width:34%"></i><b style="left:4%"></b></div></td>
+      <td class="num down"><b>−45,2 tys.</b></td><td class="num down">+11,4%</td><td><span class="pill r">strata</span></td></tr>
+    <tr class="click" onclick="openKarta(873)"><td><b>873</b> JUNG PERSAN</td><td class="lbl">VNA</td><td class="lbl">KP-SA</td>
+      <td><div class="bar"><i style="width:26%"></i><b style="left:51%"></b></div></td>
+      <td class="num down">−35,5 tys.</td><td class="num up">−94,3%</td><td><span class="pill y">plan?</span></td></tr>
+    <tr class="click" onclick="openKarta(1007)"><td><b>1007</b> Szczecin frezowanie</td><td class="lbl">SPECJAL.</td><td class="lbl">KP-SA</td>
+      <td><div class="bar"><i class="neg" style="width:19%"></i><b style="left:8%"></b></div></td>
+      <td class="num down">−32,8 tys.</td><td class="num down">+52,0%</td><td><span class="pill r">strata</span></td></tr>
+    <tr class="click" onclick="openKarta(1196)"><td><b>1196</b> SMARTBAU odwodnienia 195 mb Gdynia</td><td class="lbl">KUBAT. garaże</td><td class="lbl">Marta</td>
+      <td><div class="bar"><i class="neg" style="width:22%"></i><b style="left:3%"></b></div></td>
+      <td class="num down">−29,6 tys.</td><td class="num down">+127,0%</td><td><span class="pill r">strata</span></td></tr>
+    <tr class="click" onclick="openKarta(1228)"><td><b>1228</b> ARCHE odwodnienie 180 mb Wrocław</td><td class="lbl">odwodnienia</td><td class="lbl">KP-DP</td>
+      <td><div class="bar"><i style="width:48%"></i><b style="left:50%"></b></div></td>
+      <td class="num">w toku</td><td class="num lbl">real: 50% zakresu</td><td><span class="pill g">OK</span></td></tr>
+  </table></div>
+  <p class="footnote">Pasek: wypełnienie = marża real, znacznik | = marża plan. Czerwony pasek = projekt pod kreską. Pokazano 6 z 766 wierszy — pełna tabela z paginacją w wersji produkcyjnej.</p></div>
+</section>
+
+<!-- ================= GDZIE TRACIMY ================= -->
+<section id="straty">
+  <p class="eyebrow">Interwencje</p>
+  <h2>Gdzie tracimy — Top 5 utraconej marży (2025–26)</h2>
+  <p class="sub">W złotówkach, nie w procentach: mały projekt z dużym % boli mniej niż duży z małym. Klik = karta projektu.</p>
+  <div class="grid g3">
+    <div class="card click" onclick="openKarta(1041)">
+      <p class="eyebrow">1041 · KUBATUROWE handlowe · KP-DP</p>
+      <h2 style="font-size:14.5px">Dekpol / Targówek — naprawy posadzki garaż</h2>
+      <p class="kpi down">−115,3 <small>tys. zł</small></p>
+      <p class="lbl">marża plan 184,1 → real 68,8 tys. · koszty −36% (!) — <b>problem po stronie PRZYCHODU</b>, nie kosztów</p>
+    </div>
+    <div class="card click" onclick="openKarta(1195)">
+      <p class="eyebrow">1195 · AGRO · Marta</p>
+      <h2 style="font-size:14.5px">CUBATO — nacinanie karo 1000 m² Trzebiny</h2>
+      <p class="kpi down">−45,2 <small>tys. zł</small></p>
+      <p class="lbl">plan +3,1 → real <b>−42,1 tys. (STRATA)</b> · koszty +11,4% · przychód niemal zerowy — rozliczenie?</p>
+    </div>
+    <div class="card click" onclick="openKarta(873)">
+      <p class="eyebrow">873 · PRZEMYSŁ VNA · KP-SA</p>
+      <h2 style="font-size:14.5px">JUNG PERSAN</h2>
+      <p class="kpi down">−35,5 <small>tys. zł</small></p>
+      <p class="lbl">koszty −94% od planu → <b>podejrzenie: plan wpisany błędnie</b>, nie realna strata. Do weryfikacji (Jakość danych).</p>
+    </div>
+    <div class="card click" onclick="openKarta(1007)">
+      <p class="eyebrow">1007 · SPECJALISTYCZNE · KP-SA</p>
+      <h2 style="font-size:14.5px">Szczecin — frezowanie</h2>
+      <p class="kpi down">−32,8 <small>tys. zł</small></p>
+      <p class="lbl">koszty +52% · marża real −23,1 tys. — klasyczne przepalenie budżetu</p>
+    </div>
+    <div class="card click" onclick="openKarta(1196)">
+      <p class="eyebrow">1196 · KUBAT. garaże · Marta</p>
+      <h2 style="font-size:14.5px">SMARTBAU — odwodnienia 195 mb Gdynia</h2>
+      <p class="kpi down">−29,6 <small>tys. zł</small></p>
+      <p class="lbl">koszty +127% od planu — do analizy: kalkulacja czy realizacja?</p>
+    </div>
+    <div class="card" style="border-style:dashed">
+      <p class="eyebrow">Ogon poza Top 5 — nie znika z radaru</p>
+      <p class="kpi down">−335,5 <small>tys. zł</small></p>
+      <p class="lbl"><b>80 projektów</b> pod planem marży w 2025–26. Suma ogona &gt; suma Top 5 — dlatego pełna lista w „Plan vs Wykonanie", a tu tylko czubek.</p>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <p class="eyebrow">Przekroczenia wg przyczyny · z pól projektu (custom90)</p>
+      <ul class="list">
+        <li>Przekroczenie DOJAZD <span class="lbl" style="margin-left:auto">najczęstsza flaga w danych</span></li>
+        <li>Przekroczenie CZAS <span class="lbl" style="margin-left:auto">druga najczęstsza</span></li>
+        <li>Przekroczenie KOSZTY MAT. <span class="lbl" style="margin-left:auto">trzecia</span></li>
+      </ul>
+      <p class="footnote">Dziś flagi wypełnione tylko dla 105/1138 projektów — po domknięciu K1 (faktury→projekt) przyczyny policzymy z dokumentów, nie z ręcznych flag.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Reklamacje · z pól projektu (custom10/custom18)</p>
+      <p class="kpi">32 <small>projekty z flagą REKLAMACJA</small></p>
+      <p class="footnote">Koszt reklamacji dziś niepoliczalny (brak powiązania kosztów naprawczych z projektem — K1). Na razie: licznik + lista, klik → karta projektu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JAKOŚĆ DANYCH ================= -->
+<section id="jakosc">
+  <p class="eyebrow">Kaizen — pulpit wymusza jakość danych</p>
+  <h2>Jakość danych — co blokuje które metryki</h2>
+  <p class="sub">Zła dana nie psuje marży na pulpicie — ląduje tutaj, z nazwiskiem i terminem poprawki.</p>
+  <div class="grid g3">
+    <div class="card"><p class="eyebrow">Wpisy czasu brygad</p><p class="kpi down">85%</p>
+      <p class="lbl">godzin siedzi w 32 zepsutych wpisach (&gt;12 h, zapomniany STOP). Do metryk weszło 536 h z 3 680 h.</p></div>
+    <div class="card"><p class="eyebrow">Zapomniany START</p><p class="kpi mid">46%</p>
+      <p class="lbl">wpisów ma 0 h — czas bywa też zaniżany. Filtr łapie obie strony.</p></div>
+    <div class="card"><p class="eyebrow">Faktury zakupu bez kategorii</p><p class="kpi mid">24%</p>
+      <p class="lbl">2 076 z 8 600 faktur bez przypisanej kategorii kosztów w Firmao.</p></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <p class="eyebrow">Rzetelność wpisów per pracownik · % wpisów poprawnych</p>
+      <div class="tscroll"><table>
+        <tr><th>Pracownik</th><th class="num">wpisy</th><th>rzetelność</th><th class="num">%</th></tr>
+        <tr><td>Denis Przyklenk</td><td class="num">41</td><td><div class="bar"><i style="width:68%;background:var(--good)"></i></div></td><td class="num up"><b>68%</b></td></tr>
+        <tr><td>Patryk Kuźnik</td><td class="num">50</td><td><div class="bar"><i style="width:60%;background:var(--good)"></i></div></td><td class="num up">60%</td></tr>
+        <tr><td>Tomasz Iżyk</td><td class="num">51</td><td><div class="bar"><i style="width:55%;background:var(--warn)"></i></div></td><td class="num mid">55%</td></tr>
+        <tr><td>Jakub Młynarczyk</td><td class="num">33</td><td><div class="bar"><i style="width:39%;background:var(--warn)"></i></div></td><td class="num mid">39%</td></tr>
+        <tr><td>Kamil Tutak</td><td class="num">49</td><td><div class="bar"><i style="width:35%;background:var(--warn)"></i></div></td><td class="num mid">35%</td></tr>
+        <tr><td>Mateusz Świerzy</td><td class="num">30</td><td><div class="bar"><i style="width:27%;background:var(--crit)"></i></div></td><td class="num down">27%</td></tr>
+        <tr><td>Dominik Woleń</td><td class="num">26</td><td><div class="bar"><i style="width:27%;background:var(--crit)"></i></div></td><td class="num down">27%</td></tr>
+        <tr><td>Mariusz Haliczyn</td><td class="num">23</td><td><div class="bar"><i style="width:17%;background:var(--crit)"></i></div></td><td class="num down"><b>17%</b></td></tr>
+      </table></div>
+      <p class="footnote">To wskaźnik dyscypliny klikania, nie oceny pracy. Cel po szkoleniu: &gt;90%. Wpis PDCA już czeka na pulpicie.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Braki blokujące metryki · decyzje D1–D7</p>
+      <ul class="list">
+        <li><span class="status-chip st-open">D1</span> Eksport z aplikacji <b>z datami</b> — blokuje run-rate i trend tempa</li>
+        <li><span class="status-chip st-open">D2</span> Plan ilości + godzin w Firmao — blokuje normy plan vs real</li>
+        <li><span class="status-chip st-open">D3</span> Stawki rbh i km — blokuje prognozę strat w PLN</li>
+        <li><span class="status-chip st-open">K1</span> Faktury → projekt — blokuje koszty per kategoria i drill-down</li>
+        <li><span class="status-chip st-prog">K2</span> Słownik pól custom Firmao — pytania P4–P6 wysłane</li>
+        <li><span class="status-chip st-open">D7</span> Dostęp API Firmao — blokuje świeżość (dziś dane z 11.06)</li>
+      </ul>
+      <p class="footnote">Każde zasilenie danymi generuje raport ODRZUCONE.md — lista do poprawek standardów wpisywania.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KARTA PROJEKTU ================= -->
+<section id="karta">
+  <p class="crumb" id="crumb">Gdzie tracimy → <b id="crumb-name">projekt</b> · filtr: ID projektu Firmao</p>
+  <div class="section-head">
+    <div><p class="eyebrow">Warstwa 3 · drill-down</p><h2 id="k-title">1228 · ARCHE odwodnienie 180 mb Wrocław</h2>
+      <p class="sub" id="k-sub">Otwarty · klient: ARCHE · kalkulował: KP-DP · start: 05.2026 · plan ilości: 180 mb (z nazwy — docelowo pole Firmao)</p></div>
+    <span class="pill g" id="k-pill">strefa zielona</span>
+  </div>
+
+  <div class="grid g3">
+    <div class="card">
+      <p class="eyebrow">Run-rate — tempo vs zakres</p>
+      <p class="lbl" style="margin:6px 0 2px">Zakres wykonany (nacinanie: 90 / 180 mb)</p>
+      <div class="bar" style="height:18px"><i style="width:50%"></i></div>
+      <p class="delta" style="margin:2px 0 10px">50%</p>
+      <p class="lbl" style="margin:6px 0 2px">Czas spalony (22,15 h / plan: <b>BRAK — D2</b>)</p>
+      <div class="bar" style="height:18px;background:repeating-linear-gradient(45deg,var(--chip),var(--chip) 6px,var(--surface) 6px,var(--surface) 12px)"></div>
+      <p class="delta mid" style="margin:2px 0 0">indeks tempa: <b>nieobliczalny bez planu godzin</b></p>
+      <p class="footnote">Gdy D2 wejdzie: „po 50% metrów spalone X% czasu → prognoza straty Y zł" — alarm zanim projekt się skończy.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Plan vs real · kategorie kosztów</p>
+      <div class="tscroll"><table>
+        <tr><th>Kategoria</th><th class="num">plan</th><th class="num">real</th><th class="num">CV</th></tr>
+        <tr><td>Materiały</td><td class="num lbl" colspan="3">BRAK — czeka na K1/K2 (faktury→projekt + słownik pól)</td></tr>
+        <tr><td>Robocizna</td><td class="num lbl">BRAK (D2/D3)</td><td class="num">22,15 h</td><td class="num lbl">—</td></tr>
+        <tr><td>Transport</td><td class="num lbl">BRAK (D3)</td><td class="num">240 km · 4,65 h</td><td class="num lbl">—</td></tr>
+        <tr><td>Podwykonawcy</td><td class="num lbl" colspan="3">BRAK — czeka na K1</td></tr>
+        <tr><td><b>Suma (agregat Firmao)</b></td><td class="num"><b>✓ jest</b></td><td class="num"><b>✓ jest</b></td><td class="num"><b>✓ liczone</b></td></tr>
+      </table></div>
+      <p class="footnote">Zasada „nie budujemy atrap": brak danych pokazujemy jako brak, z kodem decyzji, która go odblokuje.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Normy real na tym projekcie</p>
+      <div class="tscroll"><table>
+        <tr><th>Zadanie</th><th class="num">tempo</th><th class="num">firma (mediana)</th></tr>
+        <tr><td>Nacinanie odwodnień</td><td class="num"><b>16,5 mb/h</b></td><td class="num">≈18 mb/h</td></tr>
+        <tr><td>Trasowanie</td><td class="num">22,8 mb/h</td><td class="num">≈25 mb/h</td></tr>
+        <tr><td>Dojazd</td><td class="num">51,6 km/h</td><td class="num">60–100</td></tr>
+      </table></div>
+      <p class="eyebrow" style="margin-top:12px">Jakość danych projektu</p>
+      <p class="lbl">12 wpisów czasu · <b class="up">0 anomalii</b> · rzetelność 100% — wzorowa brygada na tym projekcie</p>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <p class="eyebrow">Historia alertów <span class="demo">PRZYKŁAD</span></p>
+      <ul class="list">
+        <li><span class="status-chip st-done">SKORYGOWANY</span> 28.06 · brak kosztów &gt;14 dni przy statusie „w realizacji" — dane spłynęły 30.06</li>
+        <li><span class="status-chip st-prog">W ANALIZIE</span> 04.07 · tempo nacinania 8% poniżej mediany firmowej</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Notatki / decyzje korygujące (Act — pole edytowalne)</p>
+      <div style="border:1px dashed var(--line);border-radius:8px;padding:10px 12px;color:var(--muted);font-size:13.5px">
+        ✎ „05.07 — DYR: dojazdy łączyć z proj. 1214 (ta sama okolica), oszczędność ~2 kursy/tydz." <span class="demo">PRZYKŁAD</span>
+      </div>
+      <p class="footnote" style="margin-top:8px">Jedyne miejsce zapisu na pulpicie — wpisy trafiają do rejestru PDCA i wracają na Pulpit jako otwarte działania.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <p class="eyebrow">Źródła danych — audytowalność każdej liczby</p>
+    <div class="tscroll"><table>
+      <tr><th>Źródło</th><th class="num">rekordów</th><th>status</th></tr>
+      <tr><td>Wpisy czasu z aplikacji (w tym odrzucone, z flagami)</td><td class="num">12</td><td><span class="pill g">podgląd ✓</span></td></tr>
+      <tr><td>Oferty / zlecenia (Firmao, project.id = 1228)</td><td class="num">3</td><td><span class="pill g">podgląd ✓</span></td></tr>
+      <tr><td>Notatki projektowe (Firmao)</td><td class="num">2</td><td><span class="pill g">podgląd ✓</span></td></tr>
+      <tr><td>Faktury zakupu / sprzedaży</td><td class="num lbl">—</td><td><span class="pill y">czeka na K1</span></td></tr>
+    </table></div>
+  </div>
+</section>
+
+</main></div>
+
+<script>
+function tab(id, btn){
+  document.querySelectorAll('main section').forEach(s=>s.classList.toggle('on', s.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected', b===btn ? 'true':'false'));
+  if(id!=='karta') document.getElementById('crumb').classList.remove('on');
+  window.scrollTo({top:0});
+}
+function tabByName(id){
+  const idx={pulpit:0,dzwignia:1,pvw:2,straty:3,jakosc:4,karta:5}[id];
+  tab(id, document.querySelectorAll('nav button')[idx]);
+}
+const KARTY={
+  1228:{t:'1228 · ARCHE odwodnienie 180 mb Wrocław', s:'Otwarty · klient: ARCHE · kalkulował: KP-DP · start: 05.2026 · plan ilości: 180 mb (z nazwy — docelowo pole Firmao)', p:['pill g','strefa zielona']},
+  1195:{t:'1195 · CUBATO nacinanie karo 1000 m² Trzebiny', s:'Zakończony · AGRO · kalkulowała: Marta · marża plan +3,1 tys. → real −42,1 tys. · koszty +11,4%', p:['pill r','STRATA — do analizy']},
+  1041:{t:'1041 · Dekpol / Targówek — naprawy posadzki garaż', s:'Zakończony · KUBATUROWE handlowe · KP-DP · utrata marży −115,3 tys. — problem po stronie przychodu', p:['pill r','czerwony']},
+  873:{t:'873 · JUNG PERSAN', s:'Zakończony · PRZEMYSŁ VNA · KP-SA · koszty −94% od planu — podejrzenie błędnego planu', p:['pill y','weryfikuj plan']},
+  1007:{t:'1007 · Szczecin frezowanie', s:'Zakończony · SPECJALISTYCZNE · KP-SA · koszty +52% · marża real −23,1 tys.', p:['pill r','strata']},
+  1196:{t:'1196 · SMARTBAU odwodnienia 195 mb Gdynia', s:'Zakończony · KUBATUROWE garaże · Marta · koszty +127% od planu', p:['pill r','strata']}
+};
+function openKarta(id){
+  const k=KARTY[id]||KARTY[1228];
+  document.getElementById('k-title').textContent=k.t;
+  document.getElementById('k-sub').textContent=k.s;
+  const pill=document.getElementById('k-pill'); pill.className=k.p[0]; pill.textContent=k.p[1];
+  document.getElementById('crumb-name').textContent=k.t;
+  tabByName('karta');
+  document.getElementById('crumb').classList.add('on');
+}
+function tg(){
+  const r=document.documentElement;
+  const cur=r.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  r.setAttribute('data-theme', cur==='dark'?'light':'dark');
+}
+</script>

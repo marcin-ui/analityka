@@ -1,0 +1,21 @@
+# Progi pulpitu — edytuj bez zmiany kodu. Po zmianie uruchom: ./aktualizuj.sh
+strefy:
+  zielona_max_pct: 5      # odchylenie kosztów real vs plan do 5% = zielona
+  zolta_max_pct: 10       # 5–10% = żółta, powyżej = czerwona
+
+czas_pracy:
+  max_godzin_wpisu: 12    # dłuższy wpis = zapomniany STOP (anomalia)
+  polityka_anomalii: odrzuc   # odrzuc | przytnij
+
+marza:
+  minimalna_pct: 10       # projekt z marżą real poniżej progu → flaga
+
+rozliczenia:
+  prog_niedofakturowania: 0.8   # przychód real < 80% planu na zakończonym = luka
+
+lag:
+  dni_wykluczenia_ze_strat: 30  # świeżo zakończone nie wchodzą do rankingu strat
+                                # (koszty księgują się szybciej niż faktury sprzedaży)
+
+trend:
+  od_okresu: "2024 H1"    # wcześniejsze okresy odrzucone: błąd >100% z braków danych plan
