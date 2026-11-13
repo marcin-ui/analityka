@@ -1,0 +1,29 @@
+# Słowniki firmowe — jedno miejsce mapowań. Po zmianie uruchom: ./aktualizuj.sh
+
+# Zadania z aplikacji brygad, które NIE wytwarzają produkcji (do utylizacji):
+zadania_nieprodukcyjne:
+  - Dojazd
+  - Przerwa nr 1 i 2
+  - Sprzątanie
+  - Zabezpieczenie
+
+# Mapowanie osoba -> brygada (decyzja D5 — uzupełnij, sekcja Brygady ruszy sama):
+brygady: {}
+#  przykład:
+#  Brygada 1: [Denis Przyklenk, Jakub Młynarczyk]
+#  Brygada 2: [Tomasz Iżyk, Patryk Kuźnik]
+
+# Stawki do wyceny (decyzja D3 — uzupełnij, prognozy strat przejdą z godzin na PLN):
+stawki:
+  roboczogodzina_pln: null    # np. 95
+  kilometr_pln: null          # np. 2.30
+
+# Czytelne nazwy kont Firmao (createdBy):
+osoby:
+  "KP- D P": "KP — D.P."
+  "KP- S A": "KP — S.A."
+  "wsparcie - Marta": "Marta (wsparcie)"
+  "Marcin": "Marcin"
+  "KP - MM": "KP — M.M."
+  "QC- Justyna": "Justyna (QC)"
+  "DYR- D K": "DYR — D.K."
